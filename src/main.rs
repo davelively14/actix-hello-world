@@ -1,7 +1,13 @@
 use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
 
-fn index() -> impl Responder {
-    HttpResponse::Ok().body("Good luck!")
+struct AppState {
+    app_name: String,
+}
+
+fn index(data: web::Data<AppState>) -> impl Responder {
+    let resp = format!("Good luck, {}!", &data.app_name);
+
+    HttpResponse::Ok().body(resp)
 }
 
 fn index2() -> impl Responder {
@@ -16,6 +22,9 @@ fn index3() -> impl Responder {
 fn main() {
     HttpServer::new(|| {
         App::new()
+            .data(AppState {
+                app_name: String::from("Actix-web"),
+            })
             .route("/", web::get().to(index))
             .route("/basic", web::get().to(index2))
             .service(index3)
